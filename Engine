@@ -1,0 +1,62 @@
+CMD:engine(playerid, params[])
+{
+	new vehicleid = GetPlayerVehicleID(playerid);
+
+	if (!IsEngineVehicle(vehicleid))
+		return SendErrorMessage(playerid, "You are not in any vehicle.");
+
+	if (GetPlayerState(playerid) != PLAYER_STATE_DRIVER)
+	  	return SendErrorMessage(playerid, "You can't do this as you're not the driver.");
+
+	if (CoreVehicles[vehicleid][vehFuel] < 1)
+	  	return SendErrorMessage(playerid, "The fuel tank is empty.");
+
+	if (ReturnVehicleHealth(vehicleid) <= 300)
+	  	return SendErrorMessage(playerid, "This vehicle is totalled and can't be started.");
+
+	if (CarData[vehicleid][carOwner] > 1)
+	{
+		if (Car_IsOwner(playerid, vehicleid) || PlayerData[playerid][pAdminDuty] == true)
+		{
+			switch (GetEngineStatus(vehicleid))
+			{
+				case false:
+				{
+					SetEngineStatus(vehicleid, true);
+		      		ShowPlayerFooter(playerid, "You have ~g~started~w~ the engine!");
+		      		SendNearbyMessage(playerid, 30.0, COLOR_PURPLE, "* %s inserts the key into the ignition and starts the engine.", ReturnName(playerid, 0));
+				}
+				case true:
+				{
+			    	SetEngineStatus(vehicleid, false);
+			    	ShowPlayerFooter(playerid, "You have ~r~stopped~w~ the engine!");
+			    	SendNearbyMessage(playerid, 30.0, COLOR_PURPLE, "* %s turns the key to turn the engine off.", ReturnName(playerid, 0));
+				}
+			}
+		}
+		else
+		{
+			SendErrorMessage(playerid, "You do not have the keys to this car");
+		}
+	}
+	else
+	{
+		switch (GetEngineStatus(vehicleid))
+		{
+			case false:
+			{
+				SetEngineStatus(vehicleid, true);
+	      		ShowPlayerFooter(playerid, "You have ~g~started~w~ the engine!");
+	      		SendNearbyMessage(playerid, 30.0, COLOR_PURPLE, "* %s inserts the key into the ignition and starts the engine.", ReturnName(playerid, 0));
+			}
+			case true:
+			{
+		    	SetEngineStatus(vehicleid, false);
+		    	ShowPlayerFooter(playerid, "You have ~r~stopped~w~ the engine!");
+		    	SendNearbyMessage(playerid, 30.0, COLOR_PURPLE, "* %s turns the key to turn the engine off.", ReturnName(playerid, 0));
+			}
+		}
+	}
+
+	return 1;
+}
